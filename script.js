@@ -11,9 +11,9 @@ restartButton.style.display = 'none';
 
 // ladataan kuvat hahmolle, esteelle ja taustalle
 const dogImg = new Image();
-dogImg.src = '/tuomo_lowreso.png'; 
+dogImg.src = 'models/tuomo_lowreso.png'; 
 const laserDogImg = new Image();
-laserDogImg.src = '/tuomo_laser.png';
+laserDogImg.src = 'models/tuomo_laser.png';
 const poopImg = new Image();
 poopImg.src = '/models/poop.png';
 const bgImg = new Image();
