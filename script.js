@@ -15,13 +15,13 @@ dogImg.src = 'models/tuomo_lowreso.png';
 const laserDogImg = new Image();
 laserDogImg.src = 'models/tuomo_laser.png';
 const poopImg = new Image();
-poopImg.src = '/models/poop.png';
+poopImg.src = 'models/poop.png';
 const bgImg = new Image();
-bgImg.src = '/map.jpg'; 
+bgImg.src = 'map.jpg'; 
 const boneImg = new Image();
-boneImg.src= '/models/bone.png';
+boneImg.src= 'models/bone.png';
 const waspImg = new Image();
-waspImg.src= '/models/wasp.png';
+waspImg.src= 'models/wasp.png';
 
 
 
