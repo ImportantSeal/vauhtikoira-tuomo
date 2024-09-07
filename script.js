@@ -480,7 +480,6 @@ function drawStartScreen() {
     ctx.textAlign = 'center';
     ctx.shadowColor = '#ff00ff';  
     ctx.shadowBlur = 15;          
-    ctx.fillText('Paina "Pelaa" aloittaaksesi', canvas.width / 2, canvas.height / 2 + 20);
     ctx.shadowBlur = 0;    
            
 }

@@ -3,9 +3,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh; 
     background-color: rgb(78, 78, 78);
-    flex-direction: column; 
+    flex-direction: column;
 }
 
 #gameContainer {
@@ -14,38 +14,27 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
+    max-width: 100%;
     height: auto;
 }
 
 #gameLogo {
-    width: 40vh; 
+    min-width: 40vh;
+    width: 60vh;
     height: auto;
-    margin-bottom: 20px; 
+ 
     z-index: 999;
-}
-
-/* pienemmille näytöille pienennetään logoa */
-@media (max-width: 768px) {
-    #gameLogo {
-        width: 30vh; /* logon skaalaus pienemmälle näytölle */
-    }
-}
-
-@media (max-width: 480px) {
-    #gameLogo {
-        width: 20vh; /* pienemmillä näytöillä pienennetään lisää */
-    }
 }
 
 canvas {
     border: 1vh solid rgb(51, 51, 51);
     background-color: rgb(80, 78, 77);
-    max-width: 90%;
+    max-width: 100%;
     height: auto;
+    margin-bottom: 1vh;
 }
 
 button {
-    top: 55%;
     position: absolute;
     padding: 15px 30px;
     font-size: 24px;
@@ -59,6 +48,9 @@ button {
     box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.5);
     cursor: pointer;
     transition: all 0.3s ease;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 button:hover {
@@ -67,6 +59,8 @@ button:hover {
     text-shadow: 0px 0px 20px rgba(255, 0, 255, 0.75);
     box-shadow: 0px 0px 25px rgba(255, 0, 255, 0.75);
 }
+
+
 
 .info-box {
     width: 80%;
