@@ -23,6 +23,8 @@ const waspImg = new Image();
 waspImg.src= '/models/wasp.png';
 
 
+
+
 // hahmon tiedot
 let groundY = 360; // Maanpinnan korkeus
 let dog = {x: 80, y: groundY - 50, width: 100, height: 100, dy: 0, jumping: false}; // Varmista että hahmo ei ole maan alla
@@ -369,10 +371,15 @@ function drawScore(){
     }
 }
 
+let lastFrameTime = 0; // Muuttuja, joka pitää edellisen ruudun ajan
+
 // piirtäminen ja päivitys
-function gameLoop() {
+function gameLoop(timestamp) {
+    const deltaTime = (timestamp - lastFrameTime) / 1000; // sekunteina
+    lastFrameTime = timestamp;
     ctx.clearRect(0, 0, canvas.width, canvas.height); // tyhjennetään ruutu
 
+    update(deltaTime); // Kutsu update-funktiota delta-ajalla
     drawBackground();
     drawCharacter();
     drawBone();
@@ -384,7 +391,7 @@ function gameLoop() {
     updateLasers(); //päivitetään laserit ja tarkistetaan osumat
 
     if (gameRunning) {
-        animationFrameId = requestAnimationFrame(gameLoop);
+        requestAnimationFrame(gameLoop);
     }
 }
 
