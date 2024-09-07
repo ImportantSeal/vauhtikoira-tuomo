@@ -4,6 +4,7 @@ const restartButton = document.getElementById('restartButton');
 const playButton = document.getElementById('playButton');
 const backgroundMusic = document.getElementById('backgroundMusic');
 
+let lastFrameTime = 0; // Muuttuja, joka pitää edellisen ruudun ajan
 
 // restart-nappi piilotetaan varmuuden vuoksi heti sivun latauksen alussa
 restartButton.style.display = 'none';
@@ -32,13 +33,13 @@ let currentDogImg = dogImg;  // aluksi käytetään normaalia kuvaa
 
 // taustakuvan tiedot
 let bgX = 0; // taustakuvan x-sijainti
-let bgSpeed = 2; // taustakuvan vierimisnopeus
+let bgSpeed = 222; // taustakuvan vierimisnopeus
 
 // kakan tiedot
 let poopArray = [];
 let poopWidth = 30;
 let poopHeight = 30;
-let poopSpeed = 3;
+let poopSpeed = 333;
 let gameRunning = true;
 let gameStarted = false;
 let poopTimer; // viittaus ajastimeen
@@ -51,7 +52,7 @@ let showInGameScore = true;
 let boneArray = []; 
 let boneWidth = 30;
 let boneHeight = 30;
-let boneSpeed = 3;
+let boneSpeed = 333;
 let boneTimer;
 let bonePoints = 10; // pisteet, jotka saadaan luusta
 
@@ -59,18 +60,18 @@ let bonePoints = 10; // pisteet, jotka saadaan luusta
 let waspArray = [];
 let waspWidth = 40;
 let waspHeight = 40;
-let waspSpeed = 5;
+let waspSpeed = 555;
 let waspTimer;
 
 // laser
 let laserArray = []; // lasereille oma taulukko
-let laserSpeed = 8; // lasereiden nopeus
+let laserSpeed = 888; // lasereiden nopeus
 let lastShotTime = 0;  // aika, jolloin viimeinen laser ammuttiin
 const laserCooldown = 300;  // cooldown-aika millisekunteina
 
 // fysiikka
 let gravity = 0.1;
-let jumpForce = -4.5;
+let jumpForce = -5.5;
 
 // min ja max kakkojen esiintymisajat millisekuntteina
 let minPoopInterval = 700;
@@ -100,6 +101,8 @@ function displayScore() {
     ctx.textAlign = 'center';
     ctx.shadowColor = '#ff00ff';  
     ctx.shadowBlur = 15;  
+    ctx.shadowColor = 'transparent'; // Poista varjon väri
+
     ctx.fillText('Pisteet: ' + timeElapsed, canvas.width / 2, 50);
 }
 
@@ -234,24 +237,18 @@ function drawLaser(){
     });
 }
 // taustan piirto
-function drawBackground() {
-    ctx.drawImage(bgImg, bgX, 0, canvas.width, canvas.height); // Ensimmäinen taustakuva
-    ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height); // Toinen taustakuva
-
-    // taustakuvan liikutus vasemmalle
-    bgX -= bgSpeed;
-
-    // jos ensimmäinen taustakuva on kokonaan vasemmalla ulkona ruudusta, nollataan sijainti
+function drawBackground(deltaTime) {
+    bgX -= bgSpeed * deltaTime; // Skaalaa taustanopeus delta-ajan mukaan
     if (bgX <= -canvas.width) {
         bgX = 0;
     }
+    ctx.drawImage(bgImg, bgX, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height);
 }
 
-// laserien päivitys ja törmäysten tarkistus
-function updateLasers() {
-    // liikutetaan lasereita
-    laserArray.forEach((laser, laserIndex) => {
-        laser.x += laserSpeed;  // liikuta laseria oikealle
+function updateLasers(deltaTime) {
+    laserArray.forEach((laser) => {
+        laser.x += laserSpeed * deltaTime; // Skaalaa nopeus delta-ajan mukaan
 
         // tarkistetaan törmäys ampiaisen kanssa
         waspArray.forEach((wasp, waspIndex) => {
@@ -272,42 +269,34 @@ function updateLasers() {
     laserArray = laserArray.filter(laser => laser.x < canvas.width);
 }
 
-// pelin päivitys
-function update() {
-    if (!gameRunning) return;
+function update(deltaTime) {
+    dog.dy += gravity; // Lisätään painovoima
+    dog.y += dog.dy * deltaTime * 100; // Skaalataan delta-ajan mukaan
 
-    // lisätään painovoima
-    dog.dy += gravity;
-    dog.y += dog.dy;
-
-    // estetään maan läpi putoaminen
+    // Estetään maan läpi putoaminen
     if (dog.y + dog.height >= groundY) {
         dog.y = groundY - dog.height;
         dog.jumping = false;
     }
 
-    // kakkojen liike
     poopArray.forEach(poop => {
-        poop.x -= poopSpeed;
+        poop.x -= poopSpeed * deltaTime; // Skaalaa nopeus delta-ajan mukaan
     });
 
-    //luiden liike
     boneArray.forEach(bone => {
-        bone.x -= boneSpeed;
+        bone.x -= boneSpeed * deltaTime; // Skaalaa nopeus delta-ajan mukaan
     });
 
-    // ampiaisten liike
     waspArray.forEach(wasp => {
-        wasp.x -= waspSpeed;
+        wasp.x -= waspSpeed * deltaTime; // Skaalaa nopeus delta-ajan mukaan
     });
 
-    // poistetaan kakat ja ampiaiset, jotka ovat menneet ruudun ulkopuolelle
+    // Poistetaan ruudun ulkopuolelle menevät
     poopArray = poopArray.filter(poop => poop.x + poop.width > 0);
     waspArray = waspArray.filter(wasp => wasp.x + wasp.width > 0);
 
-    // törmäyksen tarkistus kakkoja varten
+    // Törmäyksen tarkistus kakkoja varten
     poopArray.forEach(poop => {
-        
         const poopHitboxMargin = 11; // Hitboxin pienennys marginaali
 
         if (
@@ -325,21 +314,21 @@ function update() {
         }
     });
 
-    // törmäyksen tarkistus luita varten
-    boneArray.forEach((bone, index) =>{
+    // Törmäyksen tarkistus luita varten
+    boneArray.forEach((bone, index) => {
         if (
             dog.x < bone.x + bone.width &&
             dog.x + dog.width > bone.x &&
             dog.y < bone.y + bone.height &&
             dog.y + dog.height > bone.y
         ) {
-        timeElapsed += bonePoints; //lisätään 10 pistettä
-        boneSound.play();
-        boneArray.splice(index, 1); //poistetaan luu kun se on kerätty
+            timeElapsed += bonePoints; // lisätään 10 pistettä
+            boneSound.play();
+            boneArray.splice(index, 1); // poistetaan luu kun se on kerätty
         }
     });
 
-    // törmäyksen tarkistus ampiaisia varten
+    // Törmäyksen tarkistus ampiaisia varten
     waspArray.forEach(wasp => {
         if (
             dog.x < wasp.x + wasp.width &&
@@ -353,8 +342,9 @@ function update() {
             stopTimer(); // pysäytetään ajastin
             displayScore(); // näytetään pisteet
         }
-    })
+    });
 }
+
 
 // 
 
@@ -371,29 +361,29 @@ function drawScore(){
     }
 }
 
-let lastFrameTime = 0; // Muuttuja, joka pitää edellisen ruudun ajan
-
-// piirtäminen ja päivitys
 function gameLoop(timestamp) {
-    const deltaTime = (timestamp - lastFrameTime) / 1000; // sekunteina
-    lastFrameTime = timestamp;
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // tyhjennetään ruutu
+    if (!gameRunning) return;
 
-    update(deltaTime); // Kutsu update-funktiota delta-ajalla
-    drawBackground();
-    drawCharacter();
-    drawBone();
-    drawPoop();
-    drawWasp();
-    drawLaser();
-    drawScore();// piirrä pisteet pelin aikana ylävasemmalle
-    update();
-    updateLasers(); //päivitetään laserit ja tarkistetaan osumat
+    let deltaTime = (timestamp - lastFrameTime) / 1000; // Delta-aika sekunteina
+    lastFrameTime = timestamp;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Tyhjennetään ruutu
+
+    drawBackground(deltaTime);  // Piirrä tausta
+    drawCharacter();            // Piirrä hahmo
+    drawBone();                 // Piirrä luut
+    drawPoop();                 // Piirrä kakat
+    drawWasp();                 // Piirrä ampiainen
+    drawLaser();                // Piirrä laserit
+    drawScore();                // Piirrä pisteet (tämä pitää lisätä)
+    update(deltaTime);          // Päivitä elementit
+    updateLasers(deltaTime);    // Päivitä laserit
 
     if (gameRunning) {
         requestAnimationFrame(gameLoop);
     }
 }
+
 
 // hahmon hyppy
 function jump() {
@@ -417,8 +407,8 @@ function restartGame() {
 
     // nollataan fysiikkamuuttujat, jos ne ovat muuttuneet
     gravity = 0.1;
-    jumpForce = -4.5;
-    poopSpeed = 3;
+    jumpForce = -5.5;
+    poopSpeed = 333;
 
     // taustan vieritys nollaus
     bgX = 0;
@@ -440,34 +430,39 @@ function restartGame() {
     // Nollaa ja soita taustamusiikki uudelleen
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();  // Soita musiikkia
-    
 
-    cancelAnimationFrame(animationFrameId); // barmistetaan, että aiempi requestAnimationFrame lopetetaan
-    gameLoop();
+    // Alusta lastFrameTime ja käynnistä peli uudelleen
+    lastFrameTime = performance.now();
+    requestAnimationFrame(gameLoop);
 }
 
 //käynnistä peli
+// käynnistä peli
+// käynnistä peli
 function startGame() {
-    backgroundMusic.volume = 0.15;  // Säädä musiikin voimakkuus (0.0 - 1.0)
+    backgroundMusic.volume = 0.15;  // Säädä musiikin voimakkuus
     backgroundMusic.play().catch(error => {
         console.log("Musiikin toisto epäonnistui:", error);
-    });  // Soita taustamusiikkia ja varmista, ettei toistaminen esty
+    }); 
 
     playButton.style.display = 'none';
     gameStarted = true;
     gameRunning = true;
     startTimer();
-    scheduleNextPoop(); // asetetaan kakkageneraattori pelin alussa
-    scheduleNextBone(); // asetetaan luugeneraattori pelin alussa
+    scheduleNextPoop();
+    scheduleNextBone();
     scheduleNextWasp();
-    gameLoop();
+
+    // Alustetaan lastFrameTime ennen ensimmäistä animaatiota
+    lastFrameTime = performance.now();
+    requestAnimationFrame(gameLoop);
 }
 
 
 // alkunäytön piirtäminen
 function drawStartScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBackground();
+    drawBackground(0); // Piirretään tausta alkunäyttöön
     ctx.font = '40px Franklin Gothic Medium'; 
     ctx.fillStyle = '#ff00ff';   
     ctx.textAlign = 'center';
