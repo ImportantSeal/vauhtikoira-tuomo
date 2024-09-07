@@ -270,8 +270,8 @@ function updateLasers(deltaTime) {
 }
 
 function update(deltaTime) {
-    dog.dy += gravity; // Lisätään painovoima
-    dog.y += dog.dy * deltaTime * 100; // Skaalataan delta-ajan mukaan
+    dog.dy += gravity * deltaTime * 150; // skaalataan painovoima delta-ajan mukaan
+    dog.y += dog.dy * deltaTime * 100; // skaalataan nopeus delta-ajan mukaan
 
     // Estetään maan läpi putoaminen
     if (dog.y + dog.height >= groundY) {
@@ -385,10 +385,9 @@ function gameLoop(timestamp) {
 }
 
 
-// hahmon hyppy
 function jump() {
     if (!dog.jumping) {
-        dog.dy = jumpForce;
+        dog.dy = jumpForce; 
         dog.jumping = true;
         jumpSound.play();
     }
