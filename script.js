@@ -4,15 +4,15 @@ const restartButton = document.getElementById('restartButton');
 
 // ladataan kuvat hahmolle, esteelle ja taustalle
 const dogImg = new Image();
-dogImg.src = '/models/1.png'; 
+dogImg.src = '/pxArt (1).png'; 
 const poopImg = new Image();
 poopImg.src = '/models/poop.png';
 const bgImg = new Image();
-bgImg.src = '/background.jpg'; // taustakuvan polku
+bgImg.src = '/pxArt.png'; // taustakuvan polku
 
 // hahmon tiedot
-let groundY = 365; // maanpinnan korkeus
-let dog = {x: 80, y: groundY - 50, width: 85, height: 90, dy: 0, jumping: false}; // varmista että hahmo ei ole maan alla
+let groundY = 335; // maanpinnan korkeus
+let dog = {x: 80, y: groundY - 50, width: 100, height: 100, dy: 0, jumping: false}; // varmista että hahmo ei ole maan alla
 
 // taustakuvan tiedot
 let bgX = 0; // taustakuvan x-sijainti
@@ -31,6 +31,15 @@ let animationFrameId; // viittaus requestAnimationFrameen
 let gravity = 0.1;
 let jumpForce = -5.5;
 
+// min ja max kakkojen esiintymisajat millisekuntteina
+let minPoopInterval = 700;
+let maxPoopInterval = 3000;
+
+// satunnaisten intervallien generoiminen
+function randomInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 // esteen generointi
 function spawnPoop() {
     let poop = {
@@ -40,6 +49,14 @@ function spawnPoop() {
         height: poopHeight,
     };
     poopArray.push(poop);
+    // kun kakka on luotu, asetetaan uusi satunnainen ajastin seuraavalle kakalle
+    scheduleNextPoop();
+}
+
+// seuraava kakka asetetaan satunnaisella aikavälillä
+function scheduleNextPoop() {
+    const interval = randomInterval(minPoopInterval, maxPoopInterval);
+    poopTimer = setTimeout(spawnPoop, interval); // käytetään setTimeouttia intervallin sijasta
 }
 
 // hahmon piirto
@@ -55,7 +72,7 @@ function drawPoop() {
 }
 
 // taustan piirto
-function drawBackground(){
+function drawBackground() {
     ctx.drawImage(bgImg, bgX, 0, canvas.width, canvas.height); // ensimmäinen taustakuva
     ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height); // toinen taustakuva
 
@@ -63,7 +80,7 @@ function drawBackground(){
     bgX -= bgSpeed;
 
     // jos ensimmäinen taustakuva on kokonaan vasemmalla ulkona ruudusta, nollataan sijainti
-    if (bgX <= -canvas.width){
+    if (bgX <= -canvas.width) {
         bgX = 0;
     }
 }
@@ -98,7 +115,7 @@ function update() {
             dog.y + dog.height > poop.y) {
             gameRunning = false;
             restartButton.style.display = 'block'; // näytetään uudelleenkäynnistyspainike
-            clearInterval(poopTimer); // pysäytetään ajastin
+            clearTimeout(poopTimer); // pysäytetään ajastin
             cancelAnimationFrame(animationFrameId); // pysäytetään peli
         }
     });
@@ -147,8 +164,8 @@ function restartGame() {
     restartButton.style.display = 'none';
 
     // nollataan ja käynnistetään uusi ajastin
-    clearInterval(poopTimer); // pysäytetään vanha ajastin
-    poopTimer = setInterval(spawnPoop, 2000); // luodaan uusi este 2 sekunnin välein
+    clearTimeout(poopTimer); // varmistetaan, että vanha ajastin pysäytetään
+    scheduleNextPoop(); // ajoitetaan seuraava kakka
 
     cancelAnimationFrame(animationFrameId); // varmistetaan, että aiempi requestAnimationFrame lopetetaan
     gameLoop();
@@ -157,7 +174,7 @@ function restartGame() {
 // käynnistetään peli kun kuvat on ladattu
 dogImg.onload = () => {
     gameLoop();
-    poopTimer = setInterval(spawnPoop, 2000); // luodaan este 2 sekunnin välein alussa
+    scheduleNextPoop(); // ajoitetaan ensimmäinen kakka pelin alussa
 };
 
 // lisätään kuuntelijat
