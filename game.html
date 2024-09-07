@@ -7,13 +7,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <img src="logo.png" id="gameLogo" alt="Game Logo">
+
+
     <button id="playButton" style="display: block;">Pelaa</button>
 
     <canvas id="gameCanvas" width="1000" height="400"></canvas>
 
-    <button id="restartButton">Aloita uudelleen</button>
+    <button id="restartButton">uudestaan</button>
+
+    <audio id="laserSound" src="laser.wav" preload="auto"></audio>
+    <audio id="jumpSound" src="jump.wav" preload="auto"></audio>
+    <audio id="boneSound" src="bone.wav" preload="auto"></audio>
+    <audio id="backgroundMusic" src="musiikki.wav" preload="auto" loop></audio>
+
+
+    <!-- peliohjeet -->
+    <div class="info-box">
+        <h2>Kuinka pelata</h2>
+        <ul>
+            <li>Paina <strong>Space</strong> hypätäksesi.</li>
+            <li>Paina <strong>Enter</strong> ampuaksesi laserin.</li>
+            <li>Väistä kakat, kerää luut ja tuhoa ampiaiset laserilla!</li>
+            <li>Jokaisesta luusta saat 10 pistettä, ja ampiainen tuhoamisesta 20 pistettä.</li>
+        </ul>
+    </div>
 
     <script src="script.js"></script>
 </body>
 </html>
- 

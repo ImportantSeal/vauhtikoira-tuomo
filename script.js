@@ -2,6 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const restartButton = document.getElementById('restartButton');
 const playButton = document.getElementById('playButton');
+const backgroundMusic = document.getElementById('backgroundMusic');
+
 
 // restart-nappi piilotetaan varmuuden vuoksi heti sivun latauksen alussa
 restartButton.style.display = 'none';
@@ -9,10 +11,12 @@ restartButton.style.display = 'none';
 // ladataan kuvat hahmolle, esteelle ja taustalle
 const dogImg = new Image();
 dogImg.src = '/tuomo_lowreso.png'; 
+const laserDogImg = new Image();
+laserDogImg.src = '/tuomo_laser.png';
 const poopImg = new Image();
 poopImg.src = '/models/poop.png';
 const bgImg = new Image();
-bgImg.src = '/dogukan-islek-night-time-city.jpg'; 
+bgImg.src = '/map.jpg'; 
 const boneImg = new Image();
 boneImg.src= '/models/bone.png';
 const waspImg = new Image();
@@ -22,6 +26,7 @@ waspImg.src= '/models/wasp.png';
 // hahmon tiedot
 let groundY = 360; // Maanpinnan korkeus
 let dog = {x: 80, y: groundY - 50, width: 100, height: 100, dy: 0, jumping: false}; // Varmista että hahmo ei ole maan alla
+let currentDogImg = dogImg;  // aluksi käytetään normaalia kuvaa
 
 // taustakuvan tiedot
 let bgX = 0; // taustakuvan x-sijainti
@@ -161,6 +166,17 @@ function shootLaser() {
         };
         laserArray.push(laser);  // lisätään uusi laser taulukkoon
         lastShotTime = currentTime;  // päivitetään viimeinen ampumisaika
+
+        laserSound.currentTime = 0; // äänitiedoston nollaus, jotta se voidaan soittaa useita kertoja peräkkäin
+        laserSound.play();
+          
+        // vaihdetaan koiran kuva punasilmäiseksi
+        currentDogImg = laserDogImg;
+
+        // palautetaan normaali kuva viiveen kuluttua
+        setTimeout(() => {
+            currentDogImg = dogImg;
+        }, 100);  //  viive
     }
 }
 
@@ -184,7 +200,7 @@ function scheduleNextWasp() {
 
 // hahmon piirto
 function drawCharacter() {
-    ctx.drawImage(dogImg, dog.x, dog.y, dog.width, dog.height);
+    ctx.drawImage(currentDogImg, dog.x, dog.y, dog.width, dog.height);
 }
 
 // kaka piirto
@@ -245,6 +261,7 @@ function updateLasers() {
             ) {
                 // poistetaan osunut ampiainen ja laser
                 waspArray.splice(waspIndex, 1);
+                timeElapsed += 20; 
             }
         });
     });
@@ -315,6 +332,7 @@ function update() {
             dog.y + dog.height > bone.y
         ) {
         timeElapsed += bonePoints; //lisätään 10 pistettä
+        boneSound.play();
         boneArray.splice(index, 1); //poistetaan luu kun se on kerätty
         }
     });
@@ -375,6 +393,7 @@ function jump() {
     if (!dog.jumping) {
         dog.dy = jumpForce;
         dog.jumping = true;
+        jumpSound.play();
     }
 }
 
@@ -411,12 +430,22 @@ function restartGame() {
     scheduleNextWasp();
     startTimer(); // aloitetaan uusi ajastin
 
+    // Nollaa ja soita taustamusiikki uudelleen
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play();  // Soita musiikkia
+    
+
     cancelAnimationFrame(animationFrameId); // barmistetaan, että aiempi requestAnimationFrame lopetetaan
     gameLoop();
 }
 
 //käynnistä peli
 function startGame() {
+    backgroundMusic.volume = 0.15;  // Säädä musiikin voimakkuus (0.0 - 1.0)
+    backgroundMusic.play().catch(error => {
+        console.log("Musiikin toisto epäonnistui:", error);
+    });  // Soita taustamusiikkia ja varmista, ettei toistaminen esty
+
     playButton.style.display = 'none';
     gameStarted = true;
     gameRunning = true;
