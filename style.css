@@ -1,0 +1,23 @@
+body{
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgb(78, 78, 78);
+    flex-direction: column;
+}
+
+canvas{
+    border: 1vh solid rgb(51, 51, 51);
+    background-color: rgb(255, 219, 189);
+}
+
+button {
+    position: absolute;
+    padding: 2vh 2vh;
+    font-size: 2vh;
+    cursor:pointer;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    border: 0.5vh solid rgb(51, 51, 51);
+}
