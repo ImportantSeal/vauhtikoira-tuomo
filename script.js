@@ -33,13 +33,13 @@ let currentDogImg = dogImg;  // aluksi käytetään normaalia kuvaa
 
 // taustakuvan tiedot
 let bgX = 0; // taustakuvan x-sijainti
-let bgSpeed = 222; // taustakuvan vierimisnopeus
+let bgSpeed = 400; // taustakuvan vierimisnopeus
 
 // kakan tiedot
 let poopArray = [];
 let poopWidth = 30;
 let poopHeight = 30;
-let poopSpeed = 333;
+let poopSpeed = 400;
 let gameRunning = true;
 let gameStarted = false;
 let poopTimer; // viittaus ajastimeen
@@ -52,7 +52,7 @@ let showInGameScore = true;
 let boneArray = []; 
 let boneWidth = 30;
 let boneHeight = 30;
-let boneSpeed = 333;
+let boneSpeed = 400;
 let boneTimer;
 let bonePoints = 10; // pisteet, jotka saadaan luusta
 
@@ -60,12 +60,12 @@ let bonePoints = 10; // pisteet, jotka saadaan luusta
 let waspArray = [];
 let waspWidth = 40;
 let waspHeight = 40;
-let waspSpeed = 555;
+let waspSpeed = 600;
 let waspTimer;
 
 // laser
 let laserArray = []; // lasereille oma taulukko
-let laserSpeed = 888; // lasereiden nopeus
+let laserSpeed = 1000; // lasereiden nopeus
 let lastShotTime = 0;  // aika, jolloin viimeinen laser ammuttiin
 const laserCooldown = 300;  // cooldown-aika millisekunteina
 
@@ -236,15 +236,26 @@ function drawLaser(){
         ctx.fillRect(laser.x, laser.y, laser.width, laser.height); // piirretään suorakulmio laserin muodossa
     });
 }
+
 // taustan piirto
 function drawBackground(deltaTime) {
-    bgX -= bgSpeed * deltaTime; // Skaalaa taustanopeus delta-ajan mukaan
+    bgX -= bgSpeed * deltaTime; // taustanopeus delta-ajan mukaan skaalaus
+
+    // varmistus sille ettei bgX mee negatiiviseksi yli kanvaksen leveyden
     if (bgX <= -canvas.width) {
         bgX = 0;
     }
-    ctx.drawImage(bgImg, bgX, 0, canvas.width, canvas.height);
-    ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height);
+
+    // koordinaattien kokonaisluvuiksi pyöristys
+    let roundedBgX = Math.floor(bgX);
+
+    // ensimmäinen taustakuva
+    ctx.drawImage(bgImg, roundedBgX, 0, canvas.width, canvas.height);
+
+    // toinen taustakuva heti ensimmäisen perään
+    ctx.drawImage(bgImg, roundedBgX + canvas.width, 0, canvas.width, canvas.height);
 }
+
 
 function updateLasers(deltaTime) {
     laserArray.forEach((laser) => {
@@ -407,7 +418,8 @@ function restartGame() {
     // nollataan fysiikkamuuttujat, jos ne ovat muuttuneet
     gravity = 0.1;
     jumpForce = -5.5;
-    poopSpeed = 333;
+    poopSpeed = 400;
+    boneSpeed = 400
 
     // taustan vieritys nollaus
     bgX = 0;
@@ -439,6 +451,7 @@ function restartGame() {
 // käynnistä peli
 // käynnistä peli
 function startGame() {
+    
     backgroundMusic.volume = 0.15;  // Säädä musiikin voimakkuus
     backgroundMusic.play().catch(error => {
         console.log("Musiikin toisto epäonnistui:", error);
@@ -468,7 +481,8 @@ function drawStartScreen() {
     ctx.shadowColor = '#ff00ff';  
     ctx.shadowBlur = 15;          
     ctx.fillText('Paina "Pelaa" aloittaaksesi', canvas.width / 2, canvas.height / 2 + 20);
-    ctx.shadowBlur = 0;           
+    ctx.shadowBlur = 0;    
+           
 }
 
 // käynnistä peli kun kuvat on ladattu
@@ -486,6 +500,17 @@ window.addEventListener('keydown', function(e) {
     }
     if (e.code === 'Enter') {
         shootLaser();
+    }
+});
+
+window.addEventListener('keydown', function(e) {
+    if (e.code === 'Space') {
+        jump();
+        e.preventDefault(); // Estetään välilyönti vierittämästä sivua
+    }
+    if (e.code === 'Enter') {
+        shootLaser();
+        e.preventDefault(); // Estetään Enter vierittämästä sivua
     }
 });
 

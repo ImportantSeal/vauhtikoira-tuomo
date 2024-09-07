@@ -1,21 +1,38 @@
-body{
+body {
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: rgb(78, 78, 78);
-    flex-direction: column;
+    flex-direction: column;  /* Asetetaan sisältö pystysuunnassa */
 }
 
-canvas{
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+#gameLogo {
+    width: 60vh;
+    height: auto;
+    margin-bottom: 20px; /* Asetetaan tila logon ja canvasin väliin */
+    z-index: 999;
+}
+
+canvas {
     border: 1vh solid rgb(51, 51, 51);
     background-color: rgb(80, 78, 77);
- 
+    max-width: 100%;
+    height: auto;
 }
 
 button {
-    top: 45%;
+    top: 55%;
     position: absolute;
     padding: 15px 30px;
     font-size: 24px;
@@ -36,26 +53,6 @@ button:hover {
     border-color: #ff00ff;
     text-shadow: 0px 0px 20px rgba(255, 0, 255, 0.75);
     box-shadow: 0px 0px 25px rgba(255, 0, 255, 0.75);
-}
-
-#playButton {
-    display: flex;
-    flex-direction: column;
-    top: 58%; 
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 15px 30px;
-    font-size: 24px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #00ffff;
-    background-color: transparent;
-    border: 2px solid #00ffff;
-    border-radius: 5px;
-    text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.75);
-    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .info-box {
@@ -88,11 +85,4 @@ button:hover {
 
 .info-box strong {
     color: #ff00ff;
-}
-
-#gameLogo {
-    top: 2vh;          
-    width: 60vh;       
-    height: auto;        
-    z-index: 999;        
 }
