@@ -15,9 +15,42 @@ canvas{
 
 button {
     position: absolute;
-    padding: 2vh 2vh;
-    font-size: 2vh;
-    cursor:pointer;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    border: 0.5vh solid rgb(51, 51, 51);
+    padding: 15px 30px;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #00ffff;
+    background-color: transparent;
+    border: 2px solid #00ffff;
+    border-radius: 5px;
+    text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.75);
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    color: #ff00ff;
+    border-color: #ff00ff;
+    text-shadow: 0px 0px 20px rgba(255, 0, 255, 0.75);
+    box-shadow: 0px 0px 25px rgba(255, 0, 255, 0.75);
+}
+
+#playButton {
+    position: absolute;
+    top: 60%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #00ffff;
+    background-color: transparent;
+    border: 2px solid #00ffff;
+    border-radius: 5px;
+    text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.75);
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
