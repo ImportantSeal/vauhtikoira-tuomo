@@ -181,7 +181,7 @@ function shootLaser() {
         // palautetaan normaali kuva viiveen kuluttua
         setTimeout(() => {
             currentDogImg = dogImg;
-        }, 100);  //  viive
+        }, 150);  //  viive
     }
 }
 
