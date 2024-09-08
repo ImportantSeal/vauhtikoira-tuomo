@@ -22,11 +22,30 @@ const boneImg = new Image();
 boneImg.src= 'models/bone.png';
 const waspImg = new Image();
 waspImg.src= 'models/wasp.png';
+const laserEyesImg = new Image();
+laserEyesImg.src = 'models/tuomo_laser_eyes.png'; 
 
 
+// tuomon juoksemis kuvat
+const tuomoRunImages = [
+    new Image(),
+    new Image(),
+    new Image(),
+    new Image()
+];
+tuomoRunImages[0].src = 'models/tuomo_lowreso.png'; 
+tuomoRunImages[1].src = 'models/tuomo_lowreso1.png';
+tuomoRunImages[2].src = 'models/tuomo_lowreso2.png';
+tuomoRunImages[3].src = 'models/tuomo_lowreso3.png';
 
+// Variables to control animation speed
+let currentFrame = 0;
+const totalFrames = tuomoRunImages.length;
+const animationSpeed = 100; // Time (ms) between frames
+let lastFrameChangeTime = 0;
 
 // hahmon tiedot
+let showingLaserEyes = false;  
 let groundY = 360; // Maanpinnan korkeus
 let dog = {x: 80, y: groundY - 50, width: 100, height: 100, dy: 0, jumping: false}; // Varmista että hahmo ei ole maan alla
 let currentDogImg = dogImg;  // aluksi käytetään normaalia kuvaa
@@ -175,13 +194,11 @@ function shootLaser() {
         laserSound.currentTime = 0; // äänitiedoston nollaus, jotta se voidaan soittaa useita kertoja peräkkäin
         laserSound.play();
           
-        // vaihdetaan koiran kuva punasilmäiseksi
-        currentDogImg = laserDogImg;
-
-        // palautetaan normaali kuva viiveen kuluttua
+        //nätetään laser silmät hetkellisesti
+        showingLaserEyes = true;
         setTimeout(() => {
-            currentDogImg = dogImg;
-        }, 150);  //  viive
+            showingLaserEyes = false;  
+        }, 150);
     }
 }
 
@@ -204,9 +221,25 @@ function scheduleNextWasp() {
 }
 
 // hahmon piirto
-function drawCharacter() {
-    ctx.drawImage(currentDogImg, dog.x, dog.y, dog.width, dog.height);
+function drawCharacter(deltaTime) {
+    // päivitetään animaation framejen indeksi
+    lastFrameChangeTime += deltaTime * 1000; 
+    if (lastFrameChangeTime > animationSpeed) {
+        currentFrame = (currentFrame + 1) % totalFrames; // siirrytään seuraavaan ruutuun
+        lastFrameChangeTime = 0; // nollataan ajastin ruudun vaihtamisen jälkeen
+    }
+
+    // piirretään nykyinen ruutu juoksevaan animaatioon
+    ctx.drawImage(tuomoRunImages[currentFrame], dog.x, dog.y, dog.width, dog.height);
+
+    // piirretään laser-silmät juoksevan hahmon päälle, jos laser on ammuttu
+    if (showingLaserEyes) {
+        ctx.drawImage(laserEyesImg, dog.x, dog.y, dog.width, dog.height); // piirretään laser-silmät nykyisen kuvan päälle
+    }
 }
+
+
+
 
 // kaka piirto
 function drawPoop() {
@@ -381,7 +414,7 @@ function gameLoop(timestamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Tyhjennetään ruutu
 
     drawBackground(deltaTime);  // Piirrä tausta
-    drawCharacter();            // Piirrä hahmo
+    drawCharacter(deltaTime);   // Piirrä hahmo
     drawBone();                 // Piirrä luut
     drawPoop();                 // Piirrä kakat
     drawWasp();                 // Piirrä ampiainen
